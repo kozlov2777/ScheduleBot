@@ -11,17 +11,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 public class Main extends TelegramLongPollingBot {
     private LocalDate localDate =LocalDate.now();
 
+
     public static void main(String[] args) throws TelegramApiException {
         TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
         api.registerBot(new Main());
-
-
     }
 
     @Override
@@ -37,12 +35,46 @@ public class Main extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         Long chatId = getChatId(update);
+
         if(update.hasMessage() && update.getMessage().getText().equals("/start")){
             SendMessage message = createMessage("Привіт, що бажаєш отримати?");
             message.setChatId(chatId);
             attachButtons(message, Map.of("Розклад","Розклад","Розклад на неділю","Розклад на неділю",
-                    "Розклад на завтра","Розклад на завтра"));
+                    "Розклад на завтра","Розклад на завтра","Посилання","Посилання"));
             sendApiMethodAsync(message);
+        }
+        if (update.hasCallbackQuery()){
+            if (update.getCallbackQuery().getData().equals("Посилання")){
+                SendMessage message = createMessage("1) Логічне програмування:\n" +
+                        "Classroom: https://classroom.google.com/u/0/c/NTQ1NTcwMzQyNzI3?hl=ru&hl=ru\n" +
+                        "Meet:\n" +
+                        "2) Політологія:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "3) Організація баз даних:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "4) Операційні системи UNIX:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "5) Логічне програмування:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "6) Комп’ютерні мережі:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "7) Основи теорії і методів:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "8) Ораторське мистецтво/Основи медіаграмотності:\n" +
+                        "Classroom:\n" +
+                        "Meet:\n" +
+                        "9) Компютерні системи мультимедіа:\n" +
+                        "Classroom:\n" +
+                        "Meet:");
+                message.setChatId(chatId);
+                sendApiMethodAsync(message);
+            }
         }
         if(update.hasCallbackQuery()){
             if (update.getCallbackQuery().getData().equals("Розклад на завтра")){
@@ -134,6 +166,8 @@ public class Main extends TelegramLongPollingBot {
                             "3) Ком мережі(2підгр)/Осн теор...(1підгр) Лабораторна робота (12.20-13.40 доц ПартасВК/в Баковська ІВ)  \n" +
                             "4) Комп мережі(2підгр)  Лабораторна робота  (13.50-15.10  доц Партас ВК)");
                     message.setChatId(chatId);
+                    attachButtons(message, Map.of("Розклад","Розклад","Розклад на неділю","Розклад на неділю",
+                        "Розклад на завтра","Розклад на завтра","Посилання","Посилання"));
                     sendApiMethodAsync(message);
 
             }
@@ -143,6 +177,8 @@ public class Main extends TelegramLongPollingBot {
     public void scheduleOfNextDay(Long chatId, String day){
         SendMessage message = createMessage(scheduleMap().get(day));
         message.setChatId(chatId);
+        attachButtons(message, Map.of("Розклад","Розклад","Розклад на неділю","Розклад на неділю",
+                "Розклад на завтра","Розклад на завтра","Посилання","Посилання"));
         sendApiMethodAsync(message);
     }
     public void scheduleDayOfWeek(Long chatId){
@@ -150,6 +186,8 @@ public class Main extends TelegramLongPollingBot {
             if (LocalDate.now().getDayOfWeek().name().equals(entry.getKey())){
                 SendMessage message = createMessage(entry.getValue());
                 message.setChatId(chatId);
+                attachButtons(message, Map.of("Розклад","Розклад","Розклад на неділю","Розклад на неділю",
+                        "Розклад на завтра","Розклад на завтра","Посилання","Посилання"));
                 sendApiMethodAsync(message);
             }
         }
@@ -176,6 +214,7 @@ public class Main extends TelegramLongPollingBot {
 
         return map;
     }
+
     public Long getChatId(Update update){
         if(update.hasMessage()){
             return update.getMessage().getFrom().getId();
